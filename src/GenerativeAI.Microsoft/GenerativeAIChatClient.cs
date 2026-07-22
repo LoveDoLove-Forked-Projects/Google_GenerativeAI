@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using GenerativeAI.Core;
@@ -218,7 +219,7 @@ public sealed class GenerativeAIChatClient : IChatClient
         // before request construction; otherwise inline_data blows past
         // Gemini's per-part limit and the call rejects.
         var messageList = messages as IList<ChatMessage> ?? messages.ToList();
-        Console.WriteLine($"[GenerativeAIChatClient] STREAM start — model={model.Model}, messages={messageList.Count}");
+        Debug.WriteLine($"[GenerativeAIChatClient] STREAM start — model={model.Model}, messages={messageList.Count}");
         for (int mi = 0; mi < messageList.Count; mi++)
         {
             var m = messageList[mi];
@@ -227,15 +228,15 @@ public sealed class GenerativeAIChatClient : IChatClient
                 var c = m.Contents[ci];
                 if (c is DataContent dc)
                 {
-                    Console.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = DataContent mime={dc.MediaType} bytes={dc.Data.Length}");
+                    Debug.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = DataContent mime={dc.MediaType} bytes={dc.Data.Length}");
                 }
                 else if (c is TextContent tc)
                 {
-                    Console.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = TextContent {tc.Text?.Length ?? 0} chars");
+                    Debug.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = TextContent {tc.Text?.Length ?? 0} chars");
                 }
                 else
                 {
-                    Console.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = {c.GetType().Name}");
+                    Debug.WriteLine($"[GenerativeAIChatClient]   msg[{mi}].content[{ci}] = {c.GetType().Name}");
                 }
             }
         }
@@ -265,7 +266,7 @@ public sealed class GenerativeAIChatClient : IChatClient
                         if (p.FunctionResponse != null) return $"fnResp({p.FunctionResponse.Name})";
                         return "?";
                     }));
-                Console.WriteLine($"[GenerativeAIChatClient]   request.Contents[{ci}] role={content.Role} parts=[{partsDesc}]");
+                Debug.WriteLine($"[GenerativeAIChatClient]   request.Contents[{ci}] role={content.Role} parts=[{partsDesc}]");
             }
         }
         GenerateContentResponse? lastResponse = null;
